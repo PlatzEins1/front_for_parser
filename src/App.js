@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { Route, Redirect, Routes, Navigate } from "react-router-dom";
+import logo from "./logo.svg";
+import "./App.css";
+import Navbar from "./components/reusableComponents/navbar";
+import Main from "./components/main";
+import MyDataFiles from "./components/myDataFiles";
+import CommonDataFiles from "./components/commonDataFiles";
+import Workplace from "./components/workplace";
+import LoginForm from "./components/loginForm";
+import RouteGuard from "./components/reusableComponents/routeGuard";
+import PrivateRoute from "./components/reusableComponents/privateRoute";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+	state = { username: "" };
+
+	setLogin = (username) => {
+		this.setState({ username });
+	};
+
+	render() {
+		const username = this.state.username;
+
+		return (
+			<React.Fragment>
+				{username ? <Navbar username={username} /> : ""}
+
+				<main className="container">
+					<Routes>
+						<Route element={<PrivateRoute />}>
+							<Route path="/main" element={<Main username={username} />} />
+							<Route path="/myfiles" Component={MyDataFiles} />
+							<Route path="/commonfiles" Component={CommonDataFiles} />
+							<Route path="/workplace" Component={Workplace} />
+						</Route>
+						<Route
+							path="/login"
+							element={<LoginForm setLogin={this.setLogin} />}
+						/>
+						<Route path="*" element={<Navigate to="/main" />} />
+					</Routes>
+				</main>
+			</React.Fragment>
+		);
+	}
 }
 
 export default App;
