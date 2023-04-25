@@ -4,7 +4,7 @@ import Form from "./reusableComponents/form";
 import withRouter from "./reusableComponents/withRouter";
 import axios from "axios";
 import config from "../config.json";
-import { setAuthToken } from "./reusableComponents/setAuthToken";
+import { setAuthToken } from "./services/authService";
 import { Navigate } from "react-router-dom";
 
 class LoginForm extends Form {
@@ -25,9 +25,9 @@ class LoginForm extends Form {
 
 		const { jwtUrl } = config;
 
-		console.log(navigateTo);
-
 		const navigateTo = this.props.navigateTo;
+
+		console.log(navigateTo);
 
 		const loginPayload = {
 			username: username,
@@ -43,8 +43,8 @@ class LoginForm extends Form {
 
 		this.props.setLogin(username);
 		setAuthToken(access);
-		//navigate("/main");
-		navigate(navigateTo);
+		navigate("/main");
+		//navigate(navigateTo);
 	};
 
 	render() {

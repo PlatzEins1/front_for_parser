@@ -10,6 +10,7 @@ import Workplace from "./components/workplace";
 import LoginForm from "./components/loginForm";
 import RouteGuard from "./components/reusableComponents/routeGuard";
 import PrivateRoute from "./components/reusableComponents/privateRoute";
+import config from "./config.json";
 
 class App extends Component {
 	state = { username: "" };
@@ -29,7 +30,10 @@ class App extends Component {
 					<Routes>
 						<Route element={<PrivateRoute />}>
 							<Route path="/main" element={<Main username={username} />} />
-							<Route path="/myfiles" Component={MyDataFiles} />
+							<Route
+								path="/myfiles"
+								element={<MyDataFiles username={username} />}
+							/>
 							<Route path="/commonfiles" Component={CommonDataFiles} />
 							<Route path="/workplace" Component={Workplace} />
 						</Route>
