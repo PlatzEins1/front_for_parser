@@ -10,6 +10,7 @@ import { Navigate } from "react-router-dom";
 class LoginForm extends Form {
 	state = {
 		data: { username: "", password: "" },
+		error: "",
 	};
 
 	schema = {
@@ -27,7 +28,7 @@ class LoginForm extends Form {
 
 		const navigateTo = this.props.navigateTo;
 
-		console.log(navigateTo);
+		//console.log(navigateTo);
 
 		const loginPayload = {
 			username: username,
@@ -35,15 +36,19 @@ class LoginForm extends Form {
 		};
 
 		const { data } = await axios.post(jwtUrl, loginPayload);
+		//console.log(data);
 
 		const { access, refresh } = data;
 
 		localStorage.setItem("accessToken", access);
 		localStorage.setItem("refreshToken", refresh);
+		localStorage.setItem("username", username);
 
 		this.props.setLogin(username);
 		setAuthToken(access);
+		//console.log(navigate, "navigate");
 		navigate("/main");
+
 		//navigate(navigateTo);
 	};
 

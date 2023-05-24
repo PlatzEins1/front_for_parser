@@ -1,19 +1,32 @@
-import React, { Component, useReducer } from "react";
-import WithLogin from "./reusableComponents/withLogin";
-import { Navigate } from "react-router-dom";
+import React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-class Main extends Component {
-	state = {
-		soicalNetworks: [{ name: "Вконтакте" }],
-	};
-	componentDidMount() {}
-	render() {
-		const { username } = this.props;
-		if (!username) {
-			return <Navigate to={"/login"}></Navigate>;
-		}
-		return <React.Fragment>Main</React.Fragment>;
-	}
-}
+const Main = (props) => {
+	const [socialNetworks] = useState([
+		{
+			name: "Вконтакте",
+			link: "/parseVK",
+		},
+	]);
+	const navigate = useNavigate();
+	return (
+		<React.Fragment>
+			{socialNetworks.map((socialNetwork) => {
+				return (
+					<button
+						key={socialNetwork.name}
+						className="btn btn-light"
+						onClick={() => {
+							navigate(socialNetwork.link);
+						}}
+					>
+						{socialNetwork.name}
+					</button>
+				);
+			})}
+		</React.Fragment>
+	);
+};
 
-export default WithLogin(Main);
+export default Main;

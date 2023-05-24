@@ -9,10 +9,15 @@ const PrivateRoute = () => {
 	// Add your own authentication on the below line.
 	//const isLoggedIn = AuthService.isLoggedIn();
 
-	let flag = false;
-	localStorage.getItem("token") ? (flag = true) : (flag = false);
+	const accessToken = localStorage.getItem("accessToken");
 
-	return flag ? <Outlet /> : <Navigate to="/login"></Navigate>;
+	const username = localStorage.getItem("username");
+
+	return accessToken && username ? (
+		<Outlet />
+	) : (
+		<Navigate to="/login"></Navigate>
+	);
 };
 
 export default PrivateRoute;

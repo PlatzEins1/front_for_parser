@@ -11,6 +11,7 @@ import LoginForm from "./components/loginForm";
 import RouteGuard from "./components/reusableComponents/routeGuard";
 import PrivateRoute from "./components/reusableComponents/privateRoute";
 import config from "./config.json";
+import VKParser from "./components/parseVK";
 
 class App extends Component {
 	state = { username: "" };
@@ -20,7 +21,7 @@ class App extends Component {
 	};
 
 	render() {
-		const username = this.state.username;
+		const username = localStorage.getItem("username");
 
 		return (
 			<React.Fragment>
@@ -36,6 +37,7 @@ class App extends Component {
 							/>
 							<Route path="/commonfiles" Component={CommonDataFiles} />
 							<Route path="/workplace" Component={Workplace} />
+							<Route path="/parseVK" Component={VKParser} />
 						</Route>
 						<Route
 							path="/login"

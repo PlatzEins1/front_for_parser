@@ -19,7 +19,8 @@ const LoggedInUser = (props) => {
 								onClick={() => {
 									localStorage.clear();
 
-									navigate("/login");
+									//navigate("/main");
+									window.location.reload(false);
 								}}
 							>
 								выйти.

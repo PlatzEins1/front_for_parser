@@ -1,7 +1,7 @@
 import React from "react";
 
 const Input = (props) => {
-	const { name, label, error, onChange, type, value, ...rest } = props;
+	const { name, label, error, onChange, type, value, style } = props;
 	//console.log(props);
 	return (
 		<div className="form-group" style={{ textAlign: "center" }}>

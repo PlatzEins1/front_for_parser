@@ -4,14 +4,23 @@ import withRouter from "./withRouter";
 
 const WithLogin = (WrappedComponent) => (props) => {
 	const navigateTo = WrappedComponent;
-	let flag = false;
+	const flag = localStorage.getItem("username");
+	console.log(flag, "flag");
 
-	localStorage.getItem("token") ? (flag = true) : (flag = false);
-	return flag ? (
-		<WrappedComponent {...props} />
-	) : (
-		<Navigate to="/login"></Navigate>
-	);
+	//localStorage.getItem("accessToken") ? (flag = true) : (flag = false);
+	//localStorage.getItem("username") ? (flag = true) : (flag = false);
+
+	if (flag) {
+		return <WrappedComponent {...props} />;
+	} else {
+		<Navigate to="/login"></Navigate>;
+	}
+
+	//return flag ? (
+	//	<WrappedComponent {...props} />
+	//) : (
+	//	<Navigate to="/login"></Navigate>
+	//);
 };
 
 export default WithLogin;
