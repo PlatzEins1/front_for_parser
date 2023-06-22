@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Joi from "joi-browser";
 import Input from "./input";
 import Select from "./select";
+import TextArea from "./textArea";
+import CheckBox from "./checkBox";
 
 class Form extends Component {
 	state = {
@@ -22,6 +24,7 @@ class Form extends Component {
 	validateProperty = ({ name, value }) => {
 		const obj = { [name]: value };
 		const schema = { [name]: this.schema[name] };
+
 		const { error } = Joi.validate(obj, schema);
 		return error ? error.details[0].message : null;
 	};
@@ -53,8 +56,16 @@ class Form extends Component {
 			<button
 				disabled={this.validate()}
 				style={{ marginTop: "1em" }}
-				className="btn btn-primary"
+				className="btn btn-light"
 			>
+				{label}
+			</button>
+		);
+	}
+
+	renderoptionalButton(label) {
+		return (
+			<button style={{ marginTop: "1em" }} className="btn btn-light">
 				{label}
 			</button>
 		);
@@ -90,6 +101,38 @@ class Form extends Component {
 				onChange={this.handleChange}
 				error={errors ? errors[name] : ""}
 			/>
+		);
+	}
+
+	renderTextArea(name, label, type = "text") {
+		//console.log(this.state);
+		const { data, errors } = this.state;
+
+		//console.log(data);
+
+		return (
+			<TextArea
+				type={type}
+				name={name}
+				value={data[name]}
+				label={label}
+				onChange={this.handleChange}
+				error={errors ? errors[name] : ""}
+			/>
+		);
+	}
+
+	renderCheckBox(name, label, onchange = null) {
+		const { data } = this.state;
+		const value = data[name];
+
+		return (
+			<CheckBox
+				name={name}
+				label={label}
+				value={value}
+				onchange={onchange}
+			></CheckBox>
 		);
 	}
 }

@@ -1,6 +1,4 @@
-import React, { Component, useReducer } from "react";
-import WithLogin from "./reusableComponents/withLogin";
-import { Navigate } from "react-router-dom";
+import React from "react";
 import StagesButtons from "./reusableComponents/stagesOfProcess";
 import SourceType from "./sourceType";
 import DataSource from "./dataSource";
@@ -8,9 +6,13 @@ import WhatToParse from "./whatToParse";
 import Form from "./reusableComponents/form";
 import AdditionalParsingParams from "./additionalParams";
 import axios from "axios";
+import config from "../config.json";
+import withRouter from "./reusableComponents/withRouter";
 
 class VKParser extends Form {
 	state = {
+		username: "",
+		channel_group_name: "",
 		sourceTypes: [
 			{ id: "groups", name: "Группы" },
 			{ id: "users", name: "Пользователей" },
@@ -70,15 +72,18 @@ class VKParser extends Form {
 			},
 			users: { subscriptions: [] }, //no additonal options
 		},
-		selectedAdditionalOptions: [],
 		sourceType: "", //parse information from groups, users etc
-		currentStage: 1,
 		sources: "", //string, which consists of a group ids, divided by ','
 		whatToParse: "", //comments, subscriptions, common info etc
-		additionalOptions: "",
-		query: {},
+		selectedAdditionalOptions: [],
+		currentStage: 1,
 	};
 	componentDidMount() {}
+
+	componentWillMount() {
+		const username = this.props.username;
+		this.setState({ username });
+	}
 
 	setSocialNetwork;
 
@@ -96,8 +101,7 @@ class VKParser extends Form {
 
 		reader.readAsText(file);
 		reader.onload = () => {
-			//console.log(reader.result);
-			this.setState({ sources: reader.result });
+			this.setState({ sources: reader.result.replace(/(\r\n|\n|\r)/gm, "") });
 		};
 	};
 
@@ -124,18 +128,98 @@ class VKParser extends Form {
 	handleNextStageClick = () => {
 		const { currentStage, stages } = this.state;
 		if (currentStage === stages.length) {
-			this.sendRequestToParser();
+			//this.sendRequestToParser();
+			this.sendParseRequestToWebsocket();
 		} else {
 			this.increaseCurrentStage();
 		}
 	};
 
-	sendRequestToParser() {}
+	encodeSources(sources) {
+		let encodedSources = "";
+		for (let source of sources.split(",")) {
+			encodedSources += encodeURIComponent(source) + ",";
+		}
+		return encodedSources;
+	}
+
+	stringifySelectedAdditionalOptions(selectedAdditionalOptions) {
+		let optionsString = "";
+		for (let option of selectedAdditionalOptions) {
+			//if (option.includes('\\r\\n')){}
+			optionsString += option + ",";
+		}
+		return optionsString;
+	}
+
+	sendParseRequestToWebsocket = () => {
+		const { sourceType, sources, whatToParse, selectedAdditionalOptions } =
+			this.state;
+		const encodedSources = this.encodeSources(sources);
+		const optionsString = this.stringifySelectedAdditionalOptions(
+			selectedAdditionalOptions
+		);
+
+		let url = `ws://127.0.0.1:8000/ws/parse-task-add`;
+
+		//console.log("fortnite");
+
+		const parsingSocket = new WebSocket(url);
+
+		parsingSocket.onopen = (event) => {
+			console.log("connected");
+
+			parsingSocket.send(
+				JSON.stringify({
+					appointment: "add parsing task",
+					message: "fortnite_test",
+					//group_name: channel_group_name,
+					sourceType: sourceType,
+					sources: encodedSources,
+					whatToParse: whatToParse,
+					selectedAdditionalOptions: optionsString,
+					username: this.state.username,
+				})
+			);
+		};
+
+		parsingSocket.onmessage = (event) => {
+			let data = JSON.parse(event.data);
+
+			console.log("Data:", data);
+			if (data.type == "parsing_start_notification") {
+				const navigate = this.props.navigate;
+				navigate(`/datafileAttrs/${data.message.datafile_id}?newDatafile=True`);
+			}
+		};
+	};
+
+	sendRequestToParser = async () => {
+		let parserURL = config.apiUrl + "parsing_request_from_frontend/";
+		const { sourceType, sources, whatToParse, selectedAdditionalOptions } =
+			this.state;
+		const encodedSources = this.encodeSources(sources);
+		const optionsString = this.stringifySelectedAdditionalOptions(
+			selectedAdditionalOptions
+		);
+		parserURL += `?sourceType=${sourceType}&sources=${encodedSources}&whatToParse=${whatToParse}&selectedAdditionalOptions=${optionsString}`;
+		//console.log(parserURL);
+		try {
+			const responce = await axios.get(parserURL);
+		} catch (error) {
+			if (
+				error.response.status === 401 &&
+				error.response.statusText === "Unauthorized"
+			) {
+				const { navigate } = this.props;
+				navigate("/login");
+			}
+		}
+	};
 
 	renderStage() {
 		const { handleURLInput, handleFileInput, selectAdditionalOption } = this;
 		const {
-			stages,
 			currentStage,
 			sourceTypes,
 			sourceType,
@@ -202,9 +286,6 @@ class VKParser extends Form {
 
 		const { handleURLInput, handleFileInput, handleNextStageClick } = this;
 
-		//const additionalOptions =
-		//this.state.additionalOptionsList[sourceType][whatToParse];
-
 		const nextStageDisabled =
 			(currentStage == 1 && sourceType) ||
 			(currentStage == 2 && sources) ||
@@ -237,4 +318,4 @@ class VKParser extends Form {
 	}
 }
 
-export default VKParser;
+export default withRouter(VKParser);

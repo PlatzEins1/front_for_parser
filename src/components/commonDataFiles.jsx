@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import MyDataFiles from "./myDataFiles";
 import axios from "axios";
-//import { Axios } from "./interceptors/auth_token";
-
+import withRouter from "./reusableComponents/withRouter";
+import DatafileCard from "./reusableComponents/datafileCard";
 import config from "../config.json";
 
 class CommonDataFiles extends Component {
@@ -24,22 +24,7 @@ class CommonDataFiles extends Component {
 						)}
 
 						{datafiles.map((datafile) => {
-							return (
-								<div key={datafile.id} className="card">
-									<h5 className="card-header">
-										Создан: {datafile.file_created_at}
-									</h5>
-									<div className="card-body">
-										<h5 className="card-title">
-											Наименование файла: {datafile.file_name}
-										</h5>
-										Комментарий: <p className="card-text">{datafile.comment}</p>
-										<a href="#" className="btn btn-light">
-											Go somewhere
-										</a>
-									</div>
-								</div>
-							);
+							return DatafileCard(datafile, this.props.navigate);
 						})}
 					</div>
 				</div>
@@ -55,8 +40,9 @@ class CommonDataFiles extends Component {
 
 		try {
 			const responce = await axios.get(commonDatafilesURL);
-			//console.log(responce);
-			//console.log(responce.data);
+
+			console.log(responce.data);
+
 			const datafiles = responce.data;
 			const empty = false;
 			this.setState({ datafiles, empty });

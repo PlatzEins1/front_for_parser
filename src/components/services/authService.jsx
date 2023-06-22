@@ -9,9 +9,10 @@ export async function refreshAccessToken(refreshToken, refreshUrl) {
 	console.log(responce);
 }
 
-export const setAuthToken = (token) => {
+export const setAuthToken = (token, username) => {
 	if (token) {
 		axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+		//axios.defaults.headers.common["username"] = `${username}`;
 	} else delete axios.defaults.headers.common["Authorization"];
 };
 

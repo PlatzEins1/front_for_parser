@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import config from "../config.json";
 import { useState, useEffect } from "react";
+import { paginate } from "./reusableComponents/pagination";
 
 const MyDataFilesF = (props) => {
 	const { username } = props;

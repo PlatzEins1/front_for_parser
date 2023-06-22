@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import withRouter from "./withRouter";
-import { Navigate } from "react-router-dom";
 import LoggedInUser from "./loggedInUser";
 
 class Navbar extends Component {

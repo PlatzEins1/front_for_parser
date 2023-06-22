@@ -1,11 +1,10 @@
 import Joi from "joi-browser";
-import React, { Component } from "react";
+import React from "react";
 import Form from "./reusableComponents/form";
 import withRouter from "./reusableComponents/withRouter";
 import axios from "axios";
 import config from "../config.json";
 import { setAuthToken } from "./services/authService";
-import { Navigate } from "react-router-dom";
 
 class LoginForm extends Form {
 	state = {
@@ -21,8 +20,7 @@ class LoginForm extends Form {
 	doSubmit = async () => {
 		const { navigate } = this.props;
 
-		const username = this.state.data.username;
-		const password = this.state.data.password;
+		const { username, password } = this.state.data;
 
 		const { jwtUrl } = config;
 
@@ -45,7 +43,7 @@ class LoginForm extends Form {
 		localStorage.setItem("username", username);
 
 		this.props.setLogin(username);
-		setAuthToken(access);
+		setAuthToken(access, username);
 		//console.log(navigate, "navigate");
 		navigate("/main");
 

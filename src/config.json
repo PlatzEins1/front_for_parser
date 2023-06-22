@@ -1,6 +1,6 @@
 {
 	"srvAddr": "http://127.0.0.1:8000/",
-	"apiUrl": "http://127.0.0.1:8000/main",
+	"apiUrl": "http://127.0.0.1:8000/api/",
 	"jwtUrl": "http://127.0.0.1:8000/api/token/",
 	"userDatafiles": "http://127.0.0.1:8000/api/user_datafiles/",
 	"commonDatafiles": "http://127.0.0.1:8000/api/common_datafiles/"

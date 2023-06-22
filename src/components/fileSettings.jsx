@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import Form from "./reusableComponents/form";
-import InputField from "./reusableComponents/input";
 
 class FileSettings extends Component {
 	state = {};

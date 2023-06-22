@@ -1,21 +1,33 @@
 import React, { Component } from "react";
 import axios from "axios";
 import config from "../config.json";
+import withRouter from "./reusableComponents/withRouter";
+import DatafileCard from "./reusableComponents/datafileCard";
+import { paginate } from "./reusableComponents/pagination";
 
 class MyDataFiles extends Component {
-	state = { datafiles: [], empty: false };
+	state = {
+		datafiles: [],
+		empty: false,
+		pageNumber: 1,
+		pageSize: 5,
+		totalCount: 0,
+		pagedData: [],
+	};
 
 	async componentDidMount() {
 		const { username } = this.props;
 		const userDatafilesURL = config.userDatafiles;
-		//		const responce = await axios.get(userDatafilesURL + username);
+
 		try {
 			const responce = await axios.get(userDatafilesURL + username);
-			//console.log(responce);
-			//console.log(responce.data);
+
 			const datafiles = responce.data;
+
 			const empty = false;
 			this.setState({ datafiles, empty });
+			const { totalCount, paginatedData } = this.getPaginatedData();
+			this.setState({ totalCount, paginatedData });
 		} catch (error) {
 			//console.log(error.message, "message");
 			if (error.message === "Request failed with status code 404") {
@@ -25,9 +37,19 @@ class MyDataFiles extends Component {
 		}
 	}
 
+	getPaginatedData() {
+		const { datafiles, pageNumber, pageSize, empty } = this.state;
+
+		if (!empty) {
+			const paginatedData = paginate(datafiles, pageNumber, pageSize);
+
+			return { totalCount: datafiles.length, data: paginatedData };
+		}
+	}
+
 	render() {
 		const { datafiles } = this.state;
-		//console.log(datafiles);
+
 		return (
 			<React.Fragment>
 				<div className="d-flex align-items-center justify-content-center container-fluid">
@@ -39,22 +61,7 @@ class MyDataFiles extends Component {
 						)}
 
 						{datafiles.map((datafile) => {
-							return (
-								<div key={datafile.id} className="card">
-									<h5 className="card-header">
-										Создан: {datafile.file_created_at}
-									</h5>
-									<div className="card-body">
-										<h5 className="card-title">
-											Наименование файла: {datafile.file_name}
-										</h5>
-										Комментарий: <p className="card-text">{datafile.comment}</p>
-										<a href="#" className="btn btn-light">
-											Go somewhere
-										</a>
-									</div>
-								</div>
-							);
+							return DatafileCard(datafile, this.props.navigate, true);
 						})}
 					</div>
 				</div>
@@ -63,4 +70,4 @@ class MyDataFiles extends Component {
 	}
 }
 
-export default MyDataFiles;
+export default withRouter(MyDataFiles);
